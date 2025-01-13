@@ -180,14 +180,13 @@ async function loadData() {
     return {
       html: `
         <div class="tooltip-content">
-          <h3 class="tooltip-title">${object.typeLong}</h2>
+        <div style="text-align: center; padding: 10px transform: scale(3)">${svg} </div>
+        <h3 class="tooltip-title">${object.typeLong}</h2>
           <div class="tooltip-section">
             <hr>
             <p><strong>ICAO:</strong> ${object.icao}</p>
             <p><strong>Type:</strong> ${object.aircraft_type} (${object.icaoType})</p>
             <p><strong>Category:</strong> ${object.typeDescription}</p>
-            <p>mapping, shape</p>
-            ${svg}
           </div>
         </div>
       `,
@@ -219,6 +218,41 @@ async function loadData() {
   //     $('.ui.slider').slider('set value', nextValue, true);
   //   }
   // }, 10);
+
+  let isAnimating = true; // State to track animation status
+let animationFrameId; // Store the requestAnimationFrame ID
+
+function updateSlider() {
+  if (!isAnimating) return; // Stop the animation if paused
+
+  const sliderValue = $('.ui.slider').slider('get value');
+  const nextValue = sliderValue + 30000;
+
+  if (nextValue > Math.max(...uniqueTimes) + 60000 * 60) {
+    $('.ui.slider').slider('set value', Math.min(...uniqueTimes), true);
+  } else {
+    $('.ui.slider').slider('set value', nextValue, true);
+  }
+
+  // Continue the animation
+  animationFrameId = requestAnimationFrame(updateSlider);
+}
+
+// Start the animation
+requestAnimationFrame(updateSlider);
+
+document.getElementById('toggle-animation').addEventListener('click', function () {
+  if (isAnimating) {
+    isAnimating = false;
+    cancelAnimationFrame(animationFrameId); // Stop the current animation frame
+    this.innerHTML = '<i class="play icon"></i> Resume'; // Update icon and text
+  } else {
+    isAnimating = true;
+    this.innerHTML = '<i class="pause icon"></i> Pause'; // Update icon and text
+    requestAnimationFrame(updateSlider); // Restart the animation
+  }
+});
+  
 }
 
 
