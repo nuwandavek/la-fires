@@ -10,6 +10,15 @@ let currentHour = 0;
 let globPrevUniqueTime = null;
 let globalNextUniqueTime = null;
 
+
+const colors = {
+  'Helicopter': [192, 57, 43],
+  'Military Aircraft': [22, 160, 133],
+  'Firefighting Aircraft': [41, 128, 185],
+  'Cargo Aircraft': [241, 196, 15],
+  'Other': [142, 68, 173],
+}
+
 async function loadData() {
 
   data = await d3.csv(DATA_URL, d => ({
@@ -25,17 +34,18 @@ async function loadData() {
   mappingData = await d3.json('./mapping.json');
   shapesData = await d3.json('./shapes.json');
 
+
   // const flightsLayer = new PathLayer({
   let flightsLayer = new TripsLayer({
     id: 'trip-layer',
     data: flightsData,
     getPath: d => d.coordinates,
     getTimestamps: d => d.time,
-    // random color for each path
-    getColor: d => [Math.random() * 255, Math.random() * 255, Math.random() * 255],
+    // getColor: d => [Math.random() * 255, Math.random() * 255, Math.random() * 255],
+    getColor: d => colors[d.aircraft_type],
     widthMinPixels: 3,
     rounded: true,
-    trailLength: 400,
+    trailLength: 800,
     capRounded: true,
     jointRounded: true,
     currentTime: 1736467140
@@ -136,8 +146,8 @@ async function loadData() {
           data: flightsData,
           getPath: d => d.coordinates,
           getTimestamps: d => d.time,
-          // random color for each path
-          getColor: d => [Math.random() * 255, Math.random() * 255, Math.random() * 255],
+          // getColor: d => [Math.random() * 255, Math.random() * 255, Math.random() * 255],
+          getColor: d => colors[d.aircraft_type],
           widthMinPixels: 3,
           rounded: true,
           trailLength: 400,

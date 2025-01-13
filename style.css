@@ -38,3 +38,13 @@ body {
 #main-time{
   color: #fff;
 }
+
+#top-text{
+  color: #fff;
+  font-size: 20px;
+  margin-bottom: 20px;
+  position: absolute;
+  z-index: 9999;
+  text-align: center;
+  width: 100%;
+}
