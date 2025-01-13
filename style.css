@@ -8,7 +8,7 @@ body {
 #slider-container {
   position: absolute;
   z-index: 999;
-  bottom: 10%;
+  bottom: 10px;
   width: 100%;
   text-align: center;
   display: flex;
@@ -21,6 +21,7 @@ body {
   width: 70%;
   padding: 50px 80px 20px 80px;
   border-radius: 10px;
+  position: relative;
 }
 
 #slider-1{
@@ -47,4 +48,30 @@ body {
   z-index: 9999;
   text-align: center;
   width: 100%;
+}
+
+.cool-aircraft {
+  padding: 20px !important;
+}
+
+#cool-aircrafts {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.cool-aircraft svg {
+  transform: scale(2) !important;
+}
+
+.tab{
+  margin-bottom: 20px;
+}
+
+.satt{
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: #27ae60;
 }

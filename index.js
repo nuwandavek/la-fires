@@ -10,6 +10,7 @@ let currentHour = 0;
 let globPrevUniqueTime = null;
 let globalNextUniqueTime = null;
 
+let flightIcaoFilter = [];
 
 const colors = {
   'Helicopter': [192, 57, 43],
@@ -35,10 +36,17 @@ async function loadData() {
   shapesData = await d3.json('./shapes.json');
 
 
+  const getShapes = (object) => {
+    mapping = mappingData[object.icaoType] || mappingData[object.typeDescription];
+    if (mapping){
+      return shapesData[mapping[0]];
+    }
+    return null;
+  }
   // const flightsLayer = new PathLayer({
   let flightsLayer = new TripsLayer({
     id: 'trip-layer',
-    data: flightsData,
+    data: flightIcaoFilter.length ? flightsData.filter(d => flightIcaoFilter.includes(d.icao)) : flightsData,
     getPath: d => d.coordinates,
     getTimestamps: d => d.time,
     // getColor: d => [Math.random() * 255, Math.random() * 255, Math.random() * 255],
@@ -143,7 +151,7 @@ async function loadData() {
         }
         flightsLayer = new TripsLayer({
           id: 'trip-layer',
-          data: flightsData,
+          data: flightIcaoFilter.length ? flightsData.filter(d => flightIcaoFilter.includes(d.icao)) : flightsData,
           getPath: d => d.coordinates,
           getTimestamps: d => d.time,
           // getColor: d => [Math.random() * 255, Math.random() * 255, Math.random() * 255],
@@ -178,11 +186,9 @@ async function loadData() {
 
   const updateTooltip = (object) => {
     if (!object) return null;
-    mapping = mappingData[object.icaoType] || mappingData[object.typeDescription];
-    if (mapping){
-      shape = shapesData[mapping[0]];
+    shape = getShapes(object);
+    if (shape){
       svg = createSvgFromShape(shape);
-
     }
     else{
       svg = ''
@@ -259,17 +265,67 @@ function updateSlider() {
 // Start the animation
 requestAnimationFrame(updateSlider);
 
+const cancelAnimation = () => {
+  cancelAnimationFrame(animationFrameId);
+  isAnimating = false;
+  document.getElementById('toggle-animation').innerHTML = '<i class="play icon"></i> Resume';
+}
+const playAnimation = () => {
+  isAnimating = true;
+  document.getElementById('toggle-animation').innerHTML = '<i class="pause icon"></i> Pause';
+  requestAnimationFrame(updateSlider);
+}
+
 document.getElementById('toggle-animation').addEventListener('click', function () {
   if (isAnimating) {
-    isAnimating = false;
-    cancelAnimationFrame(animationFrameId); // Stop the current animation frame
-    this.innerHTML = '<i class="play icon"></i> Resume'; // Update icon and text
+    cancelAnimation();
   } else {
-    isAnimating = true;
-    this.innerHTML = '<i class="pause icon"></i> Pause'; // Update icon and text
-    requestAnimationFrame(updateSlider); // Restart the animation
+    playAnimation();
   }
 });
+
+const coolAircrafts = ['a5210a', 'a59025', 'a6c12b', 'acd27a', 'a32af8', 'c06f07']
+
+coolAircrafts.forEach(d => {
+  // append a button to the cool-aircraft div. The button needs to have the svg opf the plane
+  // <button class="ui inverted red basic button">Basic Red</button>
+  aircraft = flightsData.find(f => f.icao == d);
+  const button = document.createElement('button')
+  button.innerHTML = "<p class='tab'>" + aircraft.typeLong + "</p>" + createSvgFromShape(getShapes(aircraft));
+  button.className = 'ui inverted red basic button cool-aircraft';
+  button.dataset.icao = aircraft.icao;
+  button.dataset.typeLong = aircraft.typeLong;
+  
+  document.getElementById('cool-aircrafts').appendChild(button);
+  
+  button.addEventListener('click', function () {
+    this.classList.add('disabled');
+
+    
+    // Get the stored aircraft data from the button
+    const buttonIcao = this.dataset.icao;
+    const buttonTypeLong = this.dataset.typeLong;
+    
+    // Add to filter
+    flightIcaoFilter.push(buttonIcao);
+
+    const label = document.createElement('div');
+    label.innerHTML = `${buttonTypeLong}<i class="delete icon"></i>`;
+    label.className = 'ui red label';
+    
+    // Add label to container
+    document.getElementById('selected-cool-aircrafts').appendChild(label);
+    
+    // Add click handler to label
+    label.addEventListener('click', function() {
+      cancelAnimation();
+      flightIcaoFilter = flightIcaoFilter.filter(f => f !== buttonIcao);
+      label.remove();
+      // Re-enable the original button
+      button.classList.remove('disabled');
+    });
+  });
+})
   
 }
 
