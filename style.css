@@ -1,0 +1,34 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+#slider-container {
+  position: absolute;
+  z-index: 999;
+  bottom: 10%;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+#slider-container2 {
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 70%;
+  padding: 50px 80px 20px 80px;
+  border-radius: 10px;
+}
+
+#slider-1{
+  min-width: 500px;
+}
+
+.label {
+  color: #27ae60;
+  /* transform: rotate(0deg) translate(0%, -100%) !important; */
+  background-color: #000;
+  border-radius: 5px;
+  padding: 5px !important;
+}
