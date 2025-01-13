@@ -226,6 +226,14 @@ function updateSlider() {
   if (!isAnimating) return; // Stop the animation if paused
 
   const sliderValue = $('.ui.slider').slider('get value');
+  $('#main-time').text(new Date(sliderValue).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+    timeZone: 'UTC'
+  }) + " UTC");
   const nextValue = sliderValue + 30000;
 
   if (nextValue > Math.max(...uniqueTimes) + 60000 * 60) {
